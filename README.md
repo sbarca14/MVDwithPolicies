@@ -135,6 +135,8 @@ Both assets of "provider-qna" and "provider-manufacturing" have some access rest
   negotiate a contract and transfer data
 - `asset-2`: requires a MembershipCredential to view and a DataProcessorCredential with a `"level": "sensitive"` to
   negotiate a contract
+- `asset-3`: requires a MembershipCredential to view and a HeadquarterCredential with greater than `"numEmployees: 5000"`
+  to negotiate a contract
 
 These requirements are formulated as EDC policies:
 
@@ -160,7 +162,7 @@ In addition, it is a dataspace rule that the `MembershipCredential` must be pres
 credential attests that the holder is a member of the dataspace.
 
 All participants of the dataspace are in possession of the `MembershipCredential` as well as a `DataProcessorCredential`
-with level `"processing"`.
+with level `"processing"`. The consumer is in possession of a `HeadquarterCredential` with numEmployees `6000`.
 
 > None possess the `DataProcessorCredential` with level="sensitive".
 
@@ -174,8 +176,8 @@ manufacturing departments), then negotiate a contract for an asset, and then tra
 need to be presented:
 
 - catalog request: present `MembershipCredential`
-- contract negotiation: `MembershipCredential` and `DataProcessorCredential(level=processing)` or
-  `DataProcessorCredential(level=sensitive)`, respectively
+- contract negotiation: `MembershipCredential` and `DataProcessorCredential(level=processing)`,
+  `DataProcessorCredential(level=sensitive)` or `HeadquarterCredential(numEmployees>5000) respectively.
 - transfer process: `MembershipCredential`
 
 ### 3.4 DIDs, participant lists and VerifiableCredentials
@@ -249,7 +251,11 @@ following tools are installed and readily available:
 - `newman` (to run Postman collections from the command line)
 - not needed, but recommended: Kubernetes monitoring tools like K9s
 
+A script named `init.sh` is provided for a quick boot, but it is recommended to be familiarised with how the manual
+boot is done in case any problems arise during the execution of the script.
+
 All commands are executed from the **repository's root folder** unless stated otherwise via `cd` commands.
+This includes the `init.sh` script, which will not work properly if executed in a different directory.
 
 > Since this is not a production deployment, all applications are deployed _in the same cluster_ and in the same
 > namespace, plainly for the sake of simplicity.
@@ -509,6 +515,9 @@ into the `policy.@id` field of the `ControlPlane Management/Initiate Negotiation
 You will receive a response immediately, but that only means that the request has been received. In order to get the
 current status of the negotiation, we'll have to inquire periodically.
 
+If you want to negotiate for `asset-3` instead to test the headquarter policy, make sure to modify the fields in
+this request accordingly.
+
 ### 7.3 Query negotiation status
 
 With the `ControlPlane Management/Get Contract Negotiations` request we can periodically query the status of all our
@@ -659,7 +668,7 @@ consumer's access token.
 Being able to express a constraint in ODRL gets us only halfway there, we also need some code to evaluate that
 expression. In EDC, we do this by registering policy evaluation functions with the policy engine.
 
-Since our dataspace defines two credential types, which can be used in policies, we also need two evaluation functions.
+Since our dataspace defines three credential types, which can be used in policies, we also need three evaluation functions.
 
 #### 8.4.1 Membership evaluation function
 
@@ -674,6 +683,13 @@ Similarly, to evaluate `DataAccess.level` constraints, there is a
 class, that asserts that a DataProcessor credential is present, and that the level is appropriate. Note that to do that,
 the function implementation needs to have knowledge about the shape and schema of the `credentialSubject` of the
 DataProcessor VC.
+
+#### 8.4.3 Headquarter evaluation function
+
+This function behaves in the same way as the previous one, but it evaluates `Headquarter.numEmployees` constraints instead,
+checking whether the number given is greater than 5000. It can be found at
+[HeadquarterFunction.java](extensions/dcp-impl/src/main/java/org/eclipse/edc/demo/dcp/policy/HeadquarterFunction.java)
+
 
 > Hint: all credentials, where the `credentialSubject` has the same shape/schema can be evaluated by the same function!
 
