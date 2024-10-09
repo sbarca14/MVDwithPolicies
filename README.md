@@ -38,6 +38,7 @@
     * [8.4 Policy evaluation functions](#84-policy-evaluation-functions)
       * [8.4.1 Membership evaluation function](#841-membership-evaluation-function)
       * [8.4.2 DataAccessLevel evaluation function](#842-dataaccesslevel-evaluation-function)
+      * [8.4.3 Headquarter evaluation function](#843-headquarter-evaluation-function)
     * [8.5 Scope-to-criterion transformer](#85-scope-to-criterion-transformer)
     * [8.6 Super-user seeding](#86-super-user-seeding)
   * [9. Other caveats, shortcuts and workarounds](#9-other-caveats-shortcuts-and-workarounds)
@@ -116,7 +117,7 @@ Note that the consumer connector does not contain any data assets in this scenar
 
 ### 3.3 Access control
 
-In this fictitious dataspace there are two types of VerifiableCredentials:
+In this fictitious dataspace there are three types of VerifiableCredentials:
 
 - `MembershipCredential`: contains information about the holder's membership in the dataspace as well as some holder
   information
@@ -125,9 +126,10 @@ In this fictitious dataspace there are two types of VerifiableCredentials:
     - `"processing"`: means, the holder can process non-sensitive data
     - `"sensitive"`: means, the holder has undergone "some very highly secure vetting process" and can process sensitive
       data
-
+- `HeadquarterCredential`: contains the number of employees in the company's headquarters
+  
   The information about the level of data a holder can process is stored in the `credentialSubject` of the
-  DataProcessorCredential.
+  `DataProcessorCredential`. The equivalent is true for the number of employees in the `HeadquarterCredential`.
 
 Both assets of "provider-qna" and "provider-manufacturing" have some access restrictions on their assets:
 
@@ -688,7 +690,7 @@ DataProcessor VC.
 
 This function behaves in the same way as the previous one, but it evaluates `Headquarter.numEmployees` constraints instead,
 checking whether the number given is greater than 5000. It can be found at
-[HeadquarterFunction.java](extensions/dcp-impl/src/main/java/org/eclipse/edc/demo/dcp/policy/HeadquarterFunction.java)
+[HeadquarterFunction.java](extensions/dcp-impl/src/main/java/org/eclipse/edc/demo/dcp/policy/HeadquarterFunction.java).
 
 
 > Hint: all credentials, where the `credentialSubject` has the same shape/schema can be evaluated by the same function!
