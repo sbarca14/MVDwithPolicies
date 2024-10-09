@@ -29,6 +29,7 @@ public class DataAccessLevelFunction extends AbstractCredentialEvaluationFunctio
 
     @Override
     public boolean evaluate(Operator operator, Object rightOperand, Duty duty, PolicyContext policyContext) {
+
         if (!operator.equals(Operator.EQ)) {
             policyContext.reportProblem("Cannot evaluate operator %s, only %s is supported".formatted(operator, Operator.EQ));
             return false;
@@ -52,11 +53,9 @@ public class DataAccessLevelFunction extends AbstractCredentialEvaluationFunctio
                 .anyMatch(credentialSubject -> {
                     var version = credentialSubject.getClaim(MVD_NAMESPACE, "contractVersion");
                     var level = credentialSubject.getClaim(MVD_NAMESPACE, "level");
-
                     return version != null && Objects.equals(level, rightOperand);
                 });
 
-        
     }
 
     public String key() {

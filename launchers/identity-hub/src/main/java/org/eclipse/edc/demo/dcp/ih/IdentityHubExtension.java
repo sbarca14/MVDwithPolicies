@@ -62,7 +62,7 @@ public class IdentityHubExtension implements ServiceExtension {
 
     @Provider
     public ScopeToCriterionTransformer createScopeTransformer() {
-        return new MvdScopeTransformer(List.of("MembershipCredential", "DataProcessorCredential"));
+        return new MvdScopeTransformer(List.of("MembershipCredential", "DataProcessorCredential", "HeadquarterCredential"));
     }
 
     private void seedCredentials(String credentialsSourceDirectory, Monitor monitor) throws IOException {

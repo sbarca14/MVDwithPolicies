@@ -17,7 +17,7 @@
 ## This script must be executed when running the dataspace from IntelliJ. Neglecting to do that will render the connectors
 ## inoperable!
 
-## Seed asset/policy/contract-def data to both "provider-qna" and "provider-manufacturing"
+echo "Seed asset/policy/contract-def data to both \"provider-qna\" and \"provider-manufacturing\""
 for url in 'http://127.0.0.1:8191' 'http://127.0.0.1:8291'
 do
   newman run \
@@ -26,7 +26,7 @@ do
     ./deployment/postman/MVD.postman_collection.json > /dev/null
 done
 
-## Seed linked assets to Catalog Server "Bob"
+echo "Seed linked assets to Catalog Server Bob"
 newman run \
   --folder "Seed Catalog Server" \
   --env-var "HOST=http://127.0.0.1:8091" \
@@ -35,7 +35,7 @@ newman run \
   ./deployment/postman/MVD.postman_collection.json > /dev/null
 
 
-## Seed identity data to identityhubs
+echo "Seed identity data to identityhubs"
 API_KEY="c3VwZXItdXNlcg==.c3VwZXItc2VjcmV0LWtleQo="
 
 # add participant "consumer"

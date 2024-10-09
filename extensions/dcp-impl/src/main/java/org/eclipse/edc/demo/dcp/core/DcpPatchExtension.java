@@ -73,6 +73,7 @@ public class DcpPatchExtension implements ServiceExtension {
 
         //register scope extractor
         scopeExtractorRegistry.registerScopeExtractor(new DataAccessCredentialScopeExtractor());
+        scopeExtractorRegistry.registerScopeExtractor(new HeadquarterCredentialScopeExtractor());
 
 
         typeTransformerRegistry.register(new JsonValueToGenericTypeTransformer(typeManager.getMapper(JSON_LD)));

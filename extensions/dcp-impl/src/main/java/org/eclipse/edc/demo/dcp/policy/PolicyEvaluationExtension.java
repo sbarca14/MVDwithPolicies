@@ -46,7 +46,7 @@ public class PolicyEvaluationExtension implements ServiceExtension {
         bindPermissionFunction(fct, CATALOG_SCOPE, MEMBERSHIP_CONSTRAINT_KEY);
 
         registerDataAccessLevelFunction();
-
+        registerHeadquarterFunction();
     }
 
     private void registerDataAccessLevelFunction() {
@@ -56,6 +56,15 @@ public class PolicyEvaluationExtension implements ServiceExtension {
         bindDutyFunction(function, TRANSFER_PROCESS_SCOPE, accessLevelKey);
         bindDutyFunction(function, NEGOTIATION_SCOPE, accessLevelKey);
         bindDutyFunction(function, CATALOG_SCOPE, accessLevelKey);
+    }
+
+    private void registerHeadquarterFunction() {
+        var function = new HeadquarterFunction();
+        var numEmployeesKey = function.key();
+
+        bindDutyFunction(function, TRANSFER_PROCESS_SCOPE, numEmployeesKey);
+        bindDutyFunction(function, NEGOTIATION_SCOPE, numEmployeesKey);
+        bindDutyFunction(function, CATALOG_SCOPE, numEmployeesKey);
     }
 
     private void bindPermissionFunction(AtomicConstraintFunction<Permission> function, String scope, String constraintType) {
