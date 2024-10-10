@@ -123,7 +123,7 @@ public class JwtSigner {
 
                     Arguments.of(System.getProperty("user.dir") + "/../../deployment/assets/credentials/k8s/consumer/headquarter_vc.json",
                             new File(System.getProperty("user.dir") + "/../../deployment/assets/credentials/k8s/consumer/headquarter-credential.json"),
-                            "did:web:alice-identityhub%3A7083:alice"),
+                            "did:web:consumer-identityhub%3A7083:alice"),
 
                     Arguments.of(System.getProperty("user.dir") + "/../../deployment/assets/credentials/k8s/consumer/dataprocessor_vc.json",
                             new File(System.getProperty("user.dir") + "/../../deployment/assets/credentials/k8s/consumer/dataprocessor-credential.json"),
@@ -135,7 +135,7 @@ public class JwtSigner {
 
                     Arguments.of(System.getProperty("user.dir") + "/../../deployment/assets/credentials/local/consumer/unsigned/headquarter_vc.json",
                             new File(System.getProperty("user.dir") + "/../../deployment/assets/credentials/local/consumer/headquarter-credential.json"),
-                            "did:web:alice-identityhub%3A7083:alice"),
+                            "did:web:consumer-identityhub%3A7083:alice"),
 
                     Arguments.of(System.getProperty("user.dir") + "/../../deployment/assets/credentials/local/consumer/unsigned/dataprocessor_vc.json",
                             new File(System.getProperty("user.dir") + "/../../deployment/assets/credentials/local/consumer/dataprocessor-credential.json"),
