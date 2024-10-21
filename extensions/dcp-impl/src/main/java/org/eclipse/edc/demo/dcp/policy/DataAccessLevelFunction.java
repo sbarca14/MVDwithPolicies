@@ -14,7 +14,10 @@
 
 package org.eclipse.edc.demo.dcp.policy;
 
-import org.eclipse.edc.policy.engine.spi.AtomicConstraintFunction;
+import org.eclipse.edc.connector.controlplane.catalog.spi.policy.CatalogPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext;
+import org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext;
+import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
 import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Duty;
 import org.eclipse.edc.policy.model.Operator;
@@ -23,18 +26,44 @@ import org.eclipse.edc.spi.agent.ParticipantAgent;
 import java.util.Map;
 import java.util.Objects;
 
-public class DataAccessLevelFunction extends AbstractCredentialEvaluationFunction implements AtomicConstraintFunction<Duty> {
+public abstract class DataAccessLevelFunction<C extends PolicyContext> extends AbstractCredentialEvaluationFunction implements AtomicConstraintRuleFunction<Duty, C> {
 
     private static final String DATAPROCESSOR_CRED_TYPE = "DataProcessorCredential";
 
-    @Override
-    public boolean evaluate(Operator operator, Object rightOperand, Duty duty, PolicyContext policyContext) {
+    public static DataAccessLevelFunction<TransferProcessPolicyContext> createForTransferProcess() {
+        return new DataAccessLevelFunction<>() {
+            @Override
+            protected ParticipantAgent getAgent(TransferProcessPolicyContext policyContext) {
+                return policyContext.agent();
+            }
+        };
+    }
 
+    public static DataAccessLevelFunction<ContractNegotiationPolicyContext> createForNegotiation() {
+        return new DataAccessLevelFunction<>() {
+            @Override
+            protected ParticipantAgent getAgent(ContractNegotiationPolicyContext policyContext) {
+                return policyContext.agent();
+            }
+        };
+    }
+
+    public static DataAccessLevelFunction<CatalogPolicyContext> createForCatalog() {
+        return new DataAccessLevelFunction<>() {
+            @Override
+            protected ParticipantAgent getAgent(CatalogPolicyContext policyContext) {
+                return policyContext.agent();
+            }
+        };
+    }
+
+    @Override
+    public boolean evaluate(Operator operator, Object rightOperand, Duty duty, C policyContext) {
         if (!operator.equals(Operator.EQ)) {
             policyContext.reportProblem("Cannot evaluate operator %s, only %s is supported".formatted(operator, Operator.EQ));
             return false;
         }
-        var pa = policyContext.getContextData(ParticipantAgent.class);
+        var pa = getAgent(policyContext);
         if (pa == null) {
             policyContext.reportProblem("ParticipantAgent not found on PolicyContext");
             return false;
@@ -53,14 +82,14 @@ public class DataAccessLevelFunction extends AbstractCredentialEvaluationFunctio
                 .anyMatch(credentialSubject -> {
                     var version = credentialSubject.getClaim(MVD_NAMESPACE, "contractVersion");
                     var level = credentialSubject.getClaim(MVD_NAMESPACE, "level");
+
                     return version != null && Objects.equals(level, rightOperand);
                 });
 
+
     }
 
-    public String key() {
-        return "DataAccess.level";
-    }
+    protected abstract ParticipantAgent getAgent(C policyContext);
 
     @SuppressWarnings("unchecked")
     private <T> T getClaim(String postfix, Map<String, Object> claims) {
@@ -68,5 +97,13 @@ public class DataAccessLevelFunction extends AbstractCredentialEvaluationFunctio
                 .findFirst()
                 .map(Map.Entry::getValue)
                 .orElse(null);
+    }
+
+    private static class ForCatalog extends DataAccessLevelFunction<CatalogPolicyContext> {
+
+        @Override
+        protected ParticipantAgent getAgent(CatalogPolicyContext policyContext) {
+            return policyContext.agent();
+        }
     }
 }
