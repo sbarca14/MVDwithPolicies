@@ -47,7 +47,7 @@ public class PolicyEvaluationExtension implements ServiceExtension {
         bindPermissionFunction(MembershipCredentialEvaluationFunction.createForCatalog(), CatalogPolicyContext.class, CatalogPolicyContext.CATALOG_SCOPE, MEMBERSHIP_CONSTRAINT_KEY);
 
         registerDataAccessLevelFunction();
-
+        registerHeadquarterFunction();
     }
 
     private void registerDataAccessLevelFunction() {
@@ -59,11 +59,11 @@ public class PolicyEvaluationExtension implements ServiceExtension {
     }
 
     private void registerHeadquarterFunction() {
-        var accessLevelKey = "DataAccess.level";
+        var headquarterKey = "Headquarter.numEmployees";
 
-        bindDutyFunction(HeadquarterFunction.createForTransferProcess(), TransferProcessPolicyContext.class, TransferProcessPolicyContext.TRANSFER_SCOPE, accessLevelKey);
-        bindDutyFunction(HeadquarterFunction.createForNegotiation(), ContractNegotiationPolicyContext.class, ContractNegotiationPolicyContext.NEGOTIATION_SCOPE, accessLevelKey);
-        bindDutyFunction(HeadquarterFunction.createForCatalog(), CatalogPolicyContext.class, CatalogPolicyContext.CATALOG_SCOPE, accessLevelKey);
+        bindDutyFunction(HeadquarterFunction.createForTransferProcess(), TransferProcessPolicyContext.class, TransferProcessPolicyContext.TRANSFER_SCOPE, headquarterKey);
+        bindDutyFunction(HeadquarterFunction.createForNegotiation(), ContractNegotiationPolicyContext.class, ContractNegotiationPolicyContext.NEGOTIATION_SCOPE, headquarterKey);
+        bindDutyFunction(HeadquarterFunction.createForCatalog(), CatalogPolicyContext.class, CatalogPolicyContext.CATALOG_SCOPE, headquarterKey);
     }
 
     private <C extends PolicyContext> void bindPermissionFunction(AtomicConstraintRuleFunction<Permission, C> function, Class<C> contextClass, String scope, String constraintType) {

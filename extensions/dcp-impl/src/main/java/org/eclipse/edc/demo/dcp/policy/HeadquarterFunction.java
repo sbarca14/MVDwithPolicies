@@ -56,13 +56,12 @@ public abstract class HeadquarterFunction<C extends PolicyContext> extends Abstr
     }
 
     @Override
-    public boolean evaluate(Operator operator, Object rightOperand, Duty duty, PolicyContext policyContext) {
-
+    public boolean evaluate(Operator operator, Object rightOperand, Duty duty, C policyContext) {
         if (!operator.equals(Operator.GT)) {
             policyContext.reportProblem("Invalid operator '%s', only accepts '%s'".formatted(operator, Operator.GT));
             return false;
         }
-        var pa = policyContext.getContextData(ParticipantAgent.class);
+        var pa = getAgent(policyContext);
         if (pa == null) {
             policyContext.reportProblem("ParticipantAgent not found on PolicyContext");
             return false;
