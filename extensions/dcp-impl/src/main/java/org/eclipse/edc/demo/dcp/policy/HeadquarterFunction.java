@@ -97,6 +97,7 @@ public abstract class HeadquarterFunction<C extends PolicyContext> extends Abstr
             return false;
         }
     }
+
     private static class ForCatalog extends HeadquarterFunction<CatalogPolicyContext> {
 
         @Override
