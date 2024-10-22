@@ -60,9 +60,9 @@ public class PolicyEvaluationExtension implements ServiceExtension {
     private void registerHeadquarterFunction() {
         var headquarterKey = "Headquarter.numEmployees";
 
-        bindDutyFunction(HeadquarterFunction.createForTransferProcess(), TransferProcessPolicyContext.class, TransferProcessPolicyContext.TRANSFER_SCOPE, headquarterKey);
-        bindDutyFunction(HeadquarterFunction.createForNegotiation(), ContractNegotiationPolicyContext.class, ContractNegotiationPolicyContext.NEGOTIATION_SCOPE, headquarterKey);
-        bindDutyFunction(HeadquarterFunction.createForCatalog(), CatalogPolicyContext.class, CatalogPolicyContext.CATALOG_SCOPE, headquarterKey);
+        bindDutyFunction(HeadquarterFunction.create(), TransferProcessPolicyContext.class, TransferProcessPolicyContext.TRANSFER_SCOPE, headquarterKey);
+        bindDutyFunction(HeadquarterFunction.create(), ContractNegotiationPolicyContext.class, ContractNegotiationPolicyContext.NEGOTIATION_SCOPE, headquarterKey);
+        bindDutyFunction(HeadquarterFunction.create(), CatalogPolicyContext.class, CatalogPolicyContext.CATALOG_SCOPE, headquarterKey);
     }
 
     private <C extends PolicyContext> void bindPermissionFunction(AtomicConstraintRuleFunction<Permission, C> function, Class<C> contextClass, String scope, String constraintType) {

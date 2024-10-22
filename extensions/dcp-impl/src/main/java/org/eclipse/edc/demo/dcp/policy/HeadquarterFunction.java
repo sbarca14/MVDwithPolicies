@@ -14,44 +14,23 @@
 
 package org.eclipse.edc.demo.dcp.policy;
 
-import org.eclipse.edc.connector.controlplane.catalog.spi.policy.CatalogPolicyContext;
-import org.eclipse.edc.connector.controlplane.contract.spi.policy.ContractNegotiationPolicyContext;
-import org.eclipse.edc.connector.controlplane.contract.spi.policy.TransferProcessPolicyContext;
+import org.eclipse.edc.participant.spi.ParticipantAgentPolicyContext;
 import org.eclipse.edc.policy.engine.spi.AtomicConstraintRuleFunction;
-import org.eclipse.edc.policy.engine.spi.PolicyContext;
 import org.eclipse.edc.policy.model.Duty;
 import org.eclipse.edc.policy.model.Operator;
-import org.eclipse.edc.spi.agent.ParticipantAgent;
 
 
-public abstract class HeadquarterFunction<C extends PolicyContext> extends AbstractCredentialEvaluationFunction implements AtomicConstraintRuleFunction<Duty, C> {
+public class HeadquarterFunction<C extends ParticipantAgentPolicyContext> extends AbstractCredentialEvaluationFunction implements AtomicConstraintRuleFunction<Duty, C> {
+
 
     public static final String HEADQUARTER_CREDENTIAL = "HeadquarterCredential";
 
-    public static HeadquarterFunction<TransferProcessPolicyContext> createForTransferProcess() {
-        return new HeadquarterFunction<>() {
-            @Override
-            protected ParticipantAgent getAgent(TransferProcessPolicyContext policyContext) {
-                return policyContext.agent();
-            }
-        };
+    private HeadquarterFunction() {
+
     }
 
-    public static HeadquarterFunction<ContractNegotiationPolicyContext> createForNegotiation() {
+    public static <C extends ParticipantAgentPolicyContext> HeadquarterFunction<C> create() {
         return new HeadquarterFunction<>() {
-            @Override
-            protected ParticipantAgent getAgent(ContractNegotiationPolicyContext policyContext) {
-                return policyContext.agent();
-            }
-        };
-    }
-
-    public static HeadquarterFunction<CatalogPolicyContext> createForCatalog() {
-        return new HeadquarterFunction<>() {
-            @Override
-            protected ParticipantAgent getAgent(CatalogPolicyContext policyContext) {
-                return policyContext.agent();
-            }
         };
     }
 
@@ -61,7 +40,7 @@ public abstract class HeadquarterFunction<C extends PolicyContext> extends Abstr
             policyContext.reportProblem("Invalid operator '%s', only accepts '%s'".formatted(operator, Operator.GT));
             return false;
         }
-        var pa = getAgent(policyContext);
+        var pa = policyContext.participantAgent();
         if (pa == null) {
             policyContext.reportProblem("ParticipantAgent not found on PolicyContext");
             return false;
@@ -84,9 +63,7 @@ public abstract class HeadquarterFunction<C extends PolicyContext> extends Abstr
                 });
     }
 
-    protected abstract ParticipantAgent getAgent(C policyContext);
-
-    private boolean employeeNumberComparison(Object numEmployees, Object rightOperand, PolicyContext policyContext) {
+    private boolean employeeNumberComparison(Object numEmployees, Object rightOperand, C policyContext) {
         try {
             int operand1 = Integer.parseInt(numEmployees.toString());
             int operand2 = Integer.parseInt(rightOperand.toString());
@@ -98,11 +75,4 @@ public abstract class HeadquarterFunction<C extends PolicyContext> extends Abstr
         }
     }
 
-    private static class ForCatalog extends HeadquarterFunction<CatalogPolicyContext> {
-
-        @Override
-        protected ParticipantAgent getAgent(CatalogPolicyContext policyContext) {
-            return policyContext.agent();
-        }
-    }
 }
